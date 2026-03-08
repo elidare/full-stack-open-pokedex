@@ -1,0 +1,31 @@
+name: Testing stuff
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+jobs:
+  a_test_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: github commits
+        env:
+          COMMITS: ${{ toJson(github.event.commits.*.message) }}
+        run: echo "$COMMITS"
+      - name: github comments contain
+        env:
+          SKIP: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
+        run: echo "$SKIP"
+      - name: commits
+        env:
+          SKIP1: ${{ contains(join(toJson(github.event.commits[0].message)), '#skip') }}
+        run: echo "$SKIP1"
+      - name: commit messages
+        env:
+          SKIP2: ${{ contains(join(toJson(github.event.commits[1].message)), '#skip') }}
+        run: echo "$SKIP2"
